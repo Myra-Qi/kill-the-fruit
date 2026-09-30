@@ -19,17 +19,21 @@ function spawnFruit() {
 }
 
 function update() {
+  for (const fruit of fruits ) {
   fruit.x += fruit.vx;
   fruit.y += fruit.vy;
-
   fruit.vy += fruit.gravity;
+  }
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.font = "80px sans-serif";
-  ctx.fillText(fruit.emoji, fruit.x, fruit.y);
+
+  for (const fruit of fruits) {
+    ctx.fillText(fruit.emoji, fruit.x, fruit.y);
+  }
 }
 
 function gameLoop() {
@@ -38,5 +42,6 @@ function gameLoop() {
 
   requestAnimationFrame(gameLoop);
 }
+setInterval(spawnFruit, 800);
 
 gameLoop();
