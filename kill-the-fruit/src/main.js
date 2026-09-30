@@ -4,17 +4,19 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const fruit = {
-  x: canvas.width / 2,
-  y: canvas.height - 100,
+const fruits = [];
+function spawnFruit() {
+  const fruit = {
+    x: Math.random() * canvas.width,
+    y: canvas.height + 50,
+    vx: (Math.random() - 0.5) * 6,
+    vy: -10 - Math.random() * 5,
+    gravity: 0.4,
+    emoji: "🍉"
+  };
 
-  vx: 2,
-  vy: -12,
-
-  gravity: 0.4,
-
-  emoji: "🍉"
-};
+  fruits.push(fruit);
+}
 
 function update() {
   fruit.x += fruit.vx;
