@@ -12,7 +12,7 @@ function spawnFruit() {
     vx: (Math.random() - 0.5) * 6,
     vy: -10 - Math.random() * 5,
     gravity: 0.4,
-    emoji: "🍉"
+    emoji: ["🍉", "🍎", "🍊", "🍌"][Math.floor(Math.random() * 4)]
   };
 
   fruits.push(fruit);
