@@ -19,10 +19,16 @@ function spawnFruit() {
 }
 
 function update() {
-  for (const fruit of fruits ) {
-  fruit.x += fruit.vx;
-  fruit.y += fruit.vy;
-  fruit.vy += fruit.gravity;
+  for (let i = fruits.length - 1; i >= 0; i--) {
+    const fruit = fruits[i];
+
+    fruit.x += fruit.vx;
+    fruit.y += fruit.vy;
+    fruit.vy += fruit.gravity;
+
+    if (fruit.y > canvas.height + 100) {
+      fruits.splice(i, 1);
+    }
   }
 }
 
