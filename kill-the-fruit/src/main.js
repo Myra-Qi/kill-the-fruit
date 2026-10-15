@@ -40,6 +40,11 @@ function update() {
       fruits.splice(i, 1);
     }
   }
+  const now = performance.now();
+
+  while (trail.length && now - trail[0].time > 150) {
+    trail.shift();
+  }
 }
 
 function draw() {
@@ -50,6 +55,23 @@ function draw() {
   for (const fruit of fruits) {
     ctx.fillText(fruit.emoji, fruit.x, fruit.y);
   }
+
+  ctx.beginPath();
+
+  for (let i = 0; i < trail.length; i++) {
+    const point = trail[i];
+
+    if (i === 0) {
+      ctx.moveTo(point.x, point.y);
+    } else {
+      ctx.lineTo(point.x, point.y);
+    }
+  }
+
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 6;
+  ctx.lineCap = "round";
+  ctx.stroke();
 }
 
 function gameLoop() {
