@@ -18,6 +18,16 @@ function spawnFruit() {
   fruits.push(fruit);
 }
 
+const trail = [];
+
+canvas.addEventListener("mousemove", (event) => {
+  trail.push({
+    x: event.clientX,
+    y: event.clientY,
+    time: performance.now()
+  });
+});
+
 function update() {
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
