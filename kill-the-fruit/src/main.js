@@ -19,13 +19,23 @@ function spawnFruit() {
 }
 
 const trail = [];
+let lastMouse = null;
+let score = 0;
 
 canvas.addEventListener("mousemove", (event) => {
-  trail.push({
+  const point = {
     x: event.clientX,
     y: event.clientY,
     time: performance.now()
-  });
+  };
+
+  trail.push(point);
+
+  if (lastMouse) {
+    cutFruits(lastMouse, point);
+  }
+
+  lastMouse = point;
 });
 
 function update() {
