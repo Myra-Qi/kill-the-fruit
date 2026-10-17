@@ -62,6 +62,10 @@ function draw() {
 
   ctx.font = "80px sans-serif";
 
+  ctx.fillStyle = "white";
+  ctx.font = "28px sans-serif";
+  ctx.fillText(`Score: ${score}`, 24, 40);
+
   for (const fruit of fruits) {
     ctx.fillText(fruit.emoji, fruit.x, fruit.y);
   }
