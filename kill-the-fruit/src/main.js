@@ -59,11 +59,9 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.font = "80px sans-serif";
-
-  ctx.fillStyle = "white";
   ctx.font = "28px sans-serif";
+  ctx.font = "80px sans-serif";
+  ctx.fillStyle = "white";
   ctx.fillText(`Score: ${score}`, 24, 40);
 
   for (const fruit of fruits) {
