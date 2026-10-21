@@ -19,7 +19,7 @@ let score = 0;
 
 // 水果配置
 const FRUITS = ["🍉", "🍎", "🍊", "🍌"];
-const FRUIT_RADIUS = 35;
+const FRUIT_RADIUS = 28;
 const FRUIT_FONT_SIZE = 80;
 
 // 生成水果
