@@ -28,8 +28,8 @@ function spawnFruit() {
     x: 50 + Math.random() * Math.max(1, canvas.width - 100),
     y: canvas.height + 50,
     vx: (Math.random() - 0.5) * 6,
-    vy: -10 - Math.random() * 5,
-    gravity: 0.4,
+    vy: -15 - Math.random() * 5,
+    gravity: 0.35,
     emoji: FRUITS[Math.floor(Math.random() * FRUITS.length)],
     radius: FRUIT_RADIUS,
   };
