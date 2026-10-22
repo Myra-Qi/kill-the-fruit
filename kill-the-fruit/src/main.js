@@ -110,6 +110,13 @@ function update() {
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
 
+    if (fruit.sliced) {
+      if (performance.now() - fruit.sliceTime > 100) {
+        fruits.splice(i, 1);
+      }
+      continue;
+    }
+
     fruit.x += fruit.vx;
     fruit.y += fruit.vy;
     fruit.vy += fruit.gravity;
