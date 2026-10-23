@@ -1,3 +1,4 @@
+
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
 
@@ -19,31 +20,58 @@ let score = 0;
 
 // 水果配置
 const FRUITS = ["🍉", "🍎", "🍊", "🍌"];
-const FRUIT_RADIUS = 28;
+const FRUIT_RADIUS = 38;
 const FRUIT_FONT_SIZE = 80;
+const SLICE_DELAY = 100;
+const TRAIL_DURATION = 150;
 
 // 生成水果
 function spawnFruit() {
+  const margin = FRUIT_RADIUS + 10;
+
   const fruit = {
-    x: 50 + Math.random() * Math.max(1, canvas.width - 100),
+    // x 现在表示水果的水平中心
+    x: margin + Math.random() *
+      Math.max(1, canvas.width - margin * 2),
+
+    // y 仍然是文字基线
     y: canvas.height + 50,
+
     vx: (Math.random() - 0.5) * 6,
     vy: -15 - Math.random() * 5,
     gravity: 0.35,
-    emoji: FRUITS[Math.floor(Math.random() * FRUITS.length)],
+
+    emoji: FRUITS[
+      Math.floor(Math.random() * FRUITS.length)
+    ],
+
     radius: FRUIT_RADIUS,
+
+    sliced: false,
+    sliceTime: 0,
   };
 
   fruits.push(fruit);
 }
 
-// 鼠标移动：记录轨迹并检测切割
-canvas.addEventListener("mousemove", (event) => {
-  const point = {
-    x: event.clientX,
-    y: event.clientY,
+// 将鼠标坐标转换为 Canvas 内部坐标
+function getCanvasPoint(event) {
+  const rect = canvas.getBoundingClientRect();
+
+  return {
+    x: (event.clientX - rect.left) *
+      (canvas.width / rect.width),
+
+    y: (event.clientY - rect.top) *
+      (canvas.height / rect.height),
+
     time: performance.now(),
   };
+}
+
+// 鼠标移动：记录轨迹并检测切割
+canvas.addEventListener("mousemove", (event) => {
+  const point = getCanvasPoint(event);
 
   trail.push(point);
 
@@ -54,7 +82,7 @@ canvas.addEventListener("mousemove", (event) => {
   lastMouse = point;
 });
 
-// 鼠标离开画布后，避免下一次移动时连接一条很长的切割线
+// 鼠标离开画布后，重置上一点
 canvas.addEventListener("mouseleave", () => {
   lastMouse = null;
 });
@@ -64,10 +92,11 @@ function lineHitsFruit(start, end, fruit) {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
 
-  // 水果中心的近似位置
+  // 水果水平居中绘制，y 为文字基线
   const centerX = fruit.x;
-  const centerY = fruit.y - FRUIT_FONT_SIZE * 0.35;
+  const centerY = fruit.y - FRUIT_FONT_SIZE * 0.5;
 
+  // 起点相对于圆心的位置
   const fx = start.x - centerX;
   const fy = start.y - centerY;
 
@@ -75,6 +104,7 @@ function lineHitsFruit(start, end, fruit) {
 
   let t = 0;
 
+  // 求线段上距离圆心最近的位置
   if (lengthSquared > 0) {
     t = -(fx * dx + fy * dy) / lengthSquared;
     t = Math.max(0, Math.min(1, t));
@@ -97,8 +127,15 @@ function cutFruits(start, end) {
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
 
+    // 已切中的水果不能重复计分
+    if (fruit.sliced) {
+      continue;
+    }
+
     if (lineHitsFruit(start, end, fruit)) {
-      fruits.splice(i, 1);
+      fruit.sliced = true;
+      fruit.sliceTime = performance.now();
+
       score += 1;
     }
   }
@@ -106,14 +143,18 @@ function cutFruits(start, end) {
 
 // 更新游戏状态
 function update() {
+  const now = performance.now();
+
   // 更新水果位置
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
 
+    // 切中后保留 100ms，再删除
     if (fruit.sliced) {
-      if (performance.now() - fruit.sliceTime > 100) {
+      if (now - fruit.sliceTime >= SLICE_DELAY) {
         fruits.splice(i, 1);
       }
+
       continue;
     }
 
@@ -128,9 +169,10 @@ function update() {
   }
 
   // 删除过期的鼠标轨迹
-  const now = performance.now();
-
-  while (trail.length > 0 && now - trail[0].time > 150) {
+  while (
+    trail.length > 0 &&
+    now - trail[0].time > TRAIL_DURATION
+  ) {
     trail.shift();
   }
 }
@@ -142,11 +184,13 @@ function draw() {
   // 绘制分数
   ctx.fillStyle = "white";
   ctx.font = "28px sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
   ctx.fillText(`Score: ${score}`, 24, 40);
 
   // 绘制水果
   ctx.font = `${FRUIT_FONT_SIZE}px sans-serif`;
-  ctx.textAlign = "left";
+  ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
 
   for (const fruit of fruits) {
