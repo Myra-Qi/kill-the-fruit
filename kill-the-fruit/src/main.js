@@ -18,7 +18,6 @@ const trail = [];
 let lastMouse = null;
 let score = 0;
 
-// 水果配置
 const FRUITS = ["🍉", "🍎", "🍊", "🍌"];
 const FRUIT_RADIUS = 38;
 const FRUIT_FONT_SIZE = 80;
@@ -142,19 +141,16 @@ function cutFruits(start, end) {
 }
 
 // 更新游戏状态
+// 更新游戏状态
 function update() {
-  const now = performance.now();
-
   // 更新水果位置
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
 
-    // 切中后保留 100ms，再删除
     if (fruit.sliced) {
-      if (now - fruit.sliceTime >= SLICE_DELAY) {
+      if (performance.now() - fruit.sliceTime > 100) {
         fruits.splice(i, 1);
       }
-
       continue;
     }
 
