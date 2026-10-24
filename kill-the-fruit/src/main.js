@@ -140,15 +140,14 @@ function cutFruits(start, end) {
   }
 }
 
-// 更新游戏状态
-// 更新游戏状态
 function update() {
+  const now = performance.now()
   // 更新水果位置
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
 
     if (fruit.sliced) {
-      if (performance.now() - fruit.sliceTime > 100) {
+      if (performance.now() - fruit.sliceTime > 65) {
         fruits.splice(i, 1);
       }
       continue;
