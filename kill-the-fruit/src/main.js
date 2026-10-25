@@ -14,6 +14,7 @@ window.addEventListener("resize", resizeCanvas);
 // 游戏状态
 const fruits = [];
 const trail = [];
+const particles = [];
 
 let lastMouse = null;
 let score = 0;
