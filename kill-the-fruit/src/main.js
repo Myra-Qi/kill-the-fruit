@@ -122,6 +122,28 @@ function lineHitsFruit(start, end, fruit) {
   );
 }
 
+function createParticles(x, y) {
+  for (let i = 0; i < 12; i++) {
+    const particle = {
+      x: x,
+      y: y,
+
+      vx: (Math.random() - 0.5) * 10,
+      vy: (Math.random() - 0.5) * 10,
+
+      life: 30,
+      maxLife: 30,
+
+      size: 3 + Math.random() * 4,
+      color: ["orange", "yellow", "red"][
+        Math.floor(Math.random() * 3)
+      ],
+    };
+
+    particles.push(particle);
+  }
+}
+
 // 切水果
 function cutFruits(start, end) {
   for (let i = fruits.length - 1; i >= 0; i--) {
@@ -134,6 +156,7 @@ function cutFruits(start, end) {
 
     if (lineHitsFruit(start, end, fruit)) {
       fruit.sliced = true;
+      createParticles(fruit.x, fruit.y);
       fruit.sliceTime = performance.now();
 
       score += 1;
