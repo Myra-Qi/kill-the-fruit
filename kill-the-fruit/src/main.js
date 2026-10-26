@@ -177,6 +177,21 @@ function update() {
       continue;
     }
 
+    // 更新粒子
+for (let i = particles.length - 1; i >= 0; i--) {
+  const particle = particles[i];
+
+  particle.x += particle.vx;
+  particle.y += particle.vy;
+  particle.vy += 0.15;
+
+  particle.life -= 1;
+
+  if (particle.life <= 0) {
+    particles.splice(i, 1);
+  }
+}
+
     fruit.x += fruit.vx;
     fruit.y += fruit.vy;
     fruit.vy += fruit.gravity;
@@ -215,6 +230,26 @@ function draw() {
   for (const fruit of fruits) {
     ctx.fillText(fruit.emoji, fruit.x, fruit.y);
   }
+
+  // 绘制粒子
+for (const particle of particles) {
+  ctx.globalAlpha = particle.life / particle.maxLife;
+
+  ctx.fillStyle = particle.color;
+
+  ctx.beginPath();
+  ctx.arc(
+    particle.x,
+    particle.y,
+    particle.size,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+}
+
+// 恢复透明度，避免影响后续绘制
+ctx.globalAlpha = 1;
 
   // 绘制鼠标切割轨迹
   if (trail.length > 1) {
