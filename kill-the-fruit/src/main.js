@@ -164,33 +164,21 @@ function cutFruits(start, end) {
   }
 }
 
+
 function update() {
-  const now = performance.now()
-  // 更新水果位置
+  const now = performance.now();
+
+  // 1. 更新水果位置
   for (let i = fruits.length - 1; i >= 0; i--) {
     const fruit = fruits[i];
 
+    // 已切中的水果：等待一小段时间后删除
     if (fruit.sliced) {
-      if (performance.now() - fruit.sliceTime > 65) {
+      if (now - fruit.sliceTime > 65) {
         fruits.splice(i, 1);
       }
       continue;
     }
-
-    // 更新粒子
-for (let i = particles.length - 1; i >= 0; i--) {
-  const particle = particles[i];
-
-  particle.x += particle.vx;
-  particle.y += particle.vy;
-  particle.vy += 0.15;
-
-  particle.life -= 1;
-
-  if (particle.life <= 0) {
-    particles.splice(i, 1);
-  }
-}
 
     fruit.x += fruit.vx;
     fruit.y += fruit.vy;
@@ -202,7 +190,22 @@ for (let i = particles.length - 1; i >= 0; i--) {
     }
   }
 
-  // 删除过期的鼠标轨迹
+  // 2. 更新粒子（放在水果循环外面）
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const particle = particles[i];
+
+    particle.x += particle.vx;
+    particle.y += particle.vy;
+    particle.vy += 0.15;
+
+    particle.life -= 1;
+
+    if (particle.life <= 0) {
+      particles.splice(i, 1);
+    }
+  }
+
+  // 3. 删除过期的鼠标轨迹
   while (
     trail.length > 0 &&
     now - trail[0].time > TRAIL_DURATION
@@ -211,6 +214,8 @@ for (let i = particles.length - 1; i >= 0; i--) {
   }
 }
 
+
+  
 // 绘制游戏画面
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
