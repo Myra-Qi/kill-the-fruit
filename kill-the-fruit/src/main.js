@@ -15,6 +15,7 @@ window.addEventListener("resize", resizeCanvas);
 const fruits = [];
 const trail = [];
 const particles = [];
+const scorePopups = [];
 
 let lastMouse = null;
 let score = 0;
@@ -160,9 +161,22 @@ function cutFruits(start, end) {
       fruit.sliceTime = performance.now();
 
       score += 1;
+      createScorePopup(fruit.x, fruit.y);
     }
   }
 }
+
+function createScorePopup(x, y) {
+  const popup = {
+    x: x,
+    y: y,
+    life: 30,
+    maxLife: 30,
+  };
+
+  scorePopups.push(popup);
+}
+
 
 
 function update() {
@@ -215,7 +229,7 @@ function update() {
 }
 
 
-  
+
 // 绘制游戏画面
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -237,24 +251,24 @@ function draw() {
   }
 
   // 绘制粒子
-for (const particle of particles) {
-  ctx.globalAlpha = particle.life / particle.maxLife;
+  for (const particle of particles) {
+    ctx.globalAlpha = particle.life / particle.maxLife;
 
-  ctx.fillStyle = particle.color;
+    ctx.fillStyle = particle.color;
 
-  ctx.beginPath();
-  ctx.arc(
-    particle.x,
-    particle.y,
-    particle.size,
-    0,
-    Math.PI * 2
-  );
-  ctx.fill();
-}
+    ctx.beginPath();
+    ctx.arc(
+      particle.x,
+      particle.y,
+      particle.size,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  }
 
-// 恢复透明度，避免影响后续绘制
-ctx.globalAlpha = 1;
+  // 恢复透明度，避免影响后续绘制
+  ctx.globalAlpha = 1;
 
   // 绘制鼠标切割轨迹
   if (trail.length > 1) {
