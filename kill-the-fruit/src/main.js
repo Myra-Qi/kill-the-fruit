@@ -204,7 +204,7 @@ function update() {
     }
   }
 
-  // 2. 更新粒子（放在水果循环外面）
+  // 2. 更新粒子
   for (let i = particles.length - 1; i >= 0; i--) {
     const particle = particles[i];
 
@@ -218,6 +218,20 @@ function update() {
       particles.splice(i, 1);
     }
   }
+
+
+  // 更新加分飘字
+  for (let i = scorePopups.length - 1; i >= 0; i--) {
+    const popup = scorePopups[i];
+
+    popup.y -= 1;
+    popup.life -= 1;
+
+    if (popup.life <= 0) {
+      scorePopups.splice(i, 1);
+    }
+  }
+
 
   // 3. 删除过期的鼠标轨迹
   while (
@@ -265,6 +279,17 @@ function draw() {
       Math.PI * 2
     );
     ctx.fill();
+  }
+
+
+  // 绘制加分飘字
+  for (const popup of scorePopups) {
+    ctx.globalAlpha = popup.life / popup.maxLife;
+
+    ctx.fillStyle = "#ffa200";
+    ctx.font = "bold 30px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("+1", popup.x, popup.y - 20);
   }
 
   // 恢复透明度，避免影响后续绘制
