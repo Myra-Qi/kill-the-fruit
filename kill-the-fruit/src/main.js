@@ -20,6 +20,7 @@ let misses = 0;
 
 let lastMouse = null;
 let score = 0;
+let bestScore = Number(localStorage.getItem("bestScore")) || 0;
 
 const FRUITS = ["🍉", "🍎", "🍊", "🍌"];
 const FRUIT_RADIUS = 38;
@@ -162,6 +163,10 @@ function cutFruits(start, end) {
       fruit.sliceTime = performance.now();
 
       score += 1;
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("bestScore", bestScore);
+      }
       createScorePopup(fruit.x, fruit.y);
     }
   }
@@ -258,6 +263,7 @@ function draw() {
   ctx.fillText(`Score: ${score}`, 24, 40);
   // 绘制漏切次数
   ctx.fillText(`Misses: ${misses}`, 24, 80);
+  ctx.fillText(`Best: ${bestScore}`, 24, 120);
 
   // 绘制水果
   ctx.font = `${FRUIT_FONT_SIZE}px sans-serif`;
