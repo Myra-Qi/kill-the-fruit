@@ -251,7 +251,7 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // 绘制分数
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "black";
   ctx.font = "28px sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
