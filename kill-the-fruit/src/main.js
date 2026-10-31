@@ -16,6 +16,7 @@ const fruits = [];
 const trail = [];
 const particles = [];
 const scorePopups = [];
+let misses = 0;
 
 let lastMouse = null;
 let score = 0;
@@ -201,6 +202,7 @@ function update() {
     // 水果落出屏幕后删除
     if (fruit.y > canvas.height + 100) {
       fruits.splice(i, 1);
+      misses += 1;
     }
   }
 
@@ -254,6 +256,8 @@ function draw() {
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.fillText(`Score: ${score}`, 24, 40);
+  // 绘制漏切次数
+  ctx.fillText(`Misses: ${misses}`, 24, 80);
 
   // 绘制水果
   ctx.font = `${FRUIT_FONT_SIZE}px sans-serif`;
