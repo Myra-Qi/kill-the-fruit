@@ -2,6 +2,29 @@
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
 
+const video = document.createElement("video");
+
+video.autoplay = true;
+video.playsInline = true;
+video.style.width = "320px";
+video.style.position = "fixed";
+video.style.top = "10px";
+video.style.right = "10px";
+video.style.zIndex = "1000";
+
+document.body.appendChild(video);
+
+async function initCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: true
+  });
+
+  video.srcObject = stream;
+  await video.play();
+}
+
+initCamera().catch(console.error);
+
 // 画布尺寸
 function resizeCanvas() {
   canvas.width = window.innerWidth;
