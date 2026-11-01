@@ -4,14 +4,7 @@ const ctx = canvas.getContext("2d");
 
 const video = document.createElement("video");
 
-video.autoplay = true;
-video.playsInline = true;
-video.style.width = "320px";
-video.style.position = "fixed";
-video.style.top = "10px";
-video.style.right = "10px";
-video.style.zIndex = "1000";
-
+video.style.display = "none";
 document.body.appendChild(video);
 
 async function initCamera() {
