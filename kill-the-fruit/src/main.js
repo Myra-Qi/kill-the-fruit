@@ -40,7 +40,16 @@ async function initHandLandmarker() {
   console.log("Hand Landmarker ready!");
 }
 
+async function init() {
+  try {
+    await initCamera();
+    await initHandLandmarker();
+  } catch (error) {
+    console.error("Initialization failed:", error);
+  }
+}
 
+init();
 
 // 画布尺寸
 function resizeCanvas() {
