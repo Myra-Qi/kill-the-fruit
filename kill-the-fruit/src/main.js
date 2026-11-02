@@ -5,8 +5,8 @@ import {
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
-
 const video = document.createElement("video");
+let handLandmarker = null;
 
 video.style.display = "none";
 document.body.appendChild(video);
@@ -19,8 +19,28 @@ async function initCamera() {
   video.srcObject = stream;
   await video.play();
 }
+async function initHandLandmarker() {
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+  );
 
-initCamera().catch(console.error);
+  handLandmarker = await HandLandmarker.createFromOptions(
+    vision,
+    {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+      },
+
+      runningMode: "VIDEO",
+      numHands: 1
+    }
+  );
+
+  console.log("Hand Landmarker ready!");
+}
+
+
 
 // 画布尺寸
 function resizeCanvas() {
