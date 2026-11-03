@@ -6,7 +6,12 @@ import {
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
 const video = document.createElement("video");
+const results = handLandmarker.detectForVideo(
+  video,
+  performance.now()
+);
 let handLandmarker = null;
+console.log(results.landmarks);
 
 video.style.display = "none";
 document.body.appendChild(video);
