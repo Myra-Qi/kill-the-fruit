@@ -5,24 +5,27 @@ import {
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
-const video = document.createElement("video");
-const results = handLandmarker.detectForVideo(
-  video,
-  performance.now()
-);
-let handLandmarker = null;
-console.log(results.landmarks);
 
+const video = document.createElement("video");
 video.style.display = "none";
 document.body.appendChild(video);
 
-async function initCamera() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: true
-  });
+let handLandmarker = null;
 
-  video.srcObject = stream;
-  await video.play();
+async function init() {
+  try {
+    await initCamera();
+    await initHandLandmarker();
+
+    const results = handLandmarker.detectForVideo(
+      video,
+      performance.now()
+    );
+
+    console.log(results.landmarks);
+  } catch (error) {
+    console.error("Initialization failed:", error);
+  }
 }
 async function initHandLandmarker() {
   const vision = await FilesetResolver.forVisionTasks(
@@ -44,17 +47,6 @@ async function initHandLandmarker() {
 
   console.log("Hand Landmarker ready!");
 }
-
-async function init() {
-  try {
-    await initCamera();
-    await initHandLandmarker();
-  } catch (error) {
-    console.error("Initialization failed:", error);
-  }
-}
-
-init();
 
 // 画布尺寸
 function resizeCanvas() {
