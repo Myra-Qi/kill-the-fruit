@@ -18,6 +18,14 @@ async function initCamera() {
   video.srcObject = stream;
   await video.play();
 
+  if (video.readyState < 2) {
+    await new Promise(resolve => {
+      video.addEventListener("loadeddata", resolve, {
+        once: true
+      });
+    });
+  }
+
   console.log("Camera ready!");
 }
 
