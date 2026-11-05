@@ -10,6 +10,17 @@ const video = document.createElement("video");
 video.style.display = "none";
 document.body.appendChild(video);
 
+async function initCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: true
+  });
+
+  video.srcObject = stream;
+  await video.play();
+
+  console.log("Camera ready!");
+}
+
 let handLandmarker = null;
 
 async function init() {
@@ -27,6 +38,8 @@ async function init() {
     console.error("Initialization failed:", error);
   }
 }
+init();
+
 async function initHandLandmarker() {
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
