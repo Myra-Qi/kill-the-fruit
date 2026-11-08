@@ -8,66 +8,213 @@ const ctx = canvas.getContext("2d");
 
 const video = document.createElement("video");
 video.style.display = "none";
+video.playsInline = true;
 document.body.appendChild(video);
 
+let cameraStream = null;
+let cameraStartPromise = null;
+let cameraRequestId = 0;
+let handDetectionFrameId = null;
+
 async function initCamera() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: true
-  });
-
-  video.srcObject = stream;
-  await video.play();
-
-  if (video.readyState < 2) {
-    await new Promise(resolve => {
-      video.addEventListener("loadeddata", resolve, {
-        once: true
-      });
-    });
+  if (cameraStream) {
+    return cameraStream;
   }
 
-  console.log("Camera ready!");
+  if (cameraStartPromise) {
+    return cameraStartPromise;
+  }
+
+  const requestId = ++cameraRequestId;
+  cameraStartPromise = navigator.mediaDevices.getUserMedia({
+    video: true
+  }).then(async stream => {
+    if (document.hidden || requestId !== cameraRequestId) {
+      stream.getTracks().forEach(track => track.stop());
+      return null;
+    }
+
+    try {
+      cameraStream = stream;
+      video.srcObject = stream;
+      await video.play();
+    } catch (error) {
+      stream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+      video.srcObject = null;
+      throw error;
+    }
+
+    if (document.hidden || requestId !== cameraRequestId) {
+      stopCamera();
+      return null;
+    }
+
+    console.log("Camera ready!");
+    return stream;
+  }).finally(() => {
+    cameraStartPromise = null;
+  });
+
+  return cameraStartPromise;
+}
+
+function stopCamera() {
+  ++cameraRequestId;
+  stopHandDetectionLoop();
+
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+
+  video.pause();
+  video.srcObject = null;
+  lastMouse = null;
+  handLastPoint = null;
 }
 
 let handLandmarker = null;
-
-async function init() {
-  try {
-    await initCamera();
-    await initHandLandmarker();
-
-    const results = handLandmarker.detectForVideo(
-      video,
-      performance.now()
-    );
-
-    console.log(results.landmarks);
-  } catch (error) {
-    console.error("Initialization failed:", error);
-  }
-}
-init();
+let handLandmarkerPromise = null;
 
 async function initHandLandmarker() {
-  const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-  );
+  if (handLandmarker) {
+    return handLandmarker;
+  }
 
-  handLandmarker = await HandLandmarker.createFromOptions(
-    vision,
-    {
-      baseOptions: {
-        modelAssetPath:
-          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
-      },
+  if (handLandmarkerPromise) {
+    return handLandmarkerPromise;
+  }
 
-      runningMode: "VIDEO",
-      numHands: 1
-    }
-  );
+  handLandmarkerPromise = (async () => {
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
 
-  console.log("Hand Landmarker ready!");
+    handLandmarker = await HandLandmarker.createFromOptions(
+      vision,
+      {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+        },
+
+        runningMode: "VIDEO",
+        numHands: 1
+      }
+    );
+
+    console.log("Hand Landmarker ready!");
+    return handLandmarker;
+  })().finally(() => {
+    handLandmarkerPromise = null;
+  });
+
+  return handLandmarkerPromise;
 }
+
+function startHandDetectionLoop() {
+  if (handDetectionFrameId !== null) {
+    return;
+  }
+
+  const detectFrame = () => {
+    handDetectionFrameId = null;
+
+    if (
+      document.hidden ||
+      !cameraStream ||
+      !handLandmarker
+    ) {
+      handLastPoint = null;
+      return;
+    }
+
+    if (video.readyState < 2) {
+      handDetectionFrameId = requestAnimationFrame(detectFrame);
+      return;
+    }
+
+    try {
+      const results = handLandmarker.detectForVideo(
+        video,
+        performance.now()
+      );
+      const indexTip = results.landmarks?.[0]?.[8];
+
+      if (!indexTip) {
+        handLastPoint = null;
+      } else {
+        const point = {
+          x: indexTip.x * canvas.width,
+          y: indexTip.y * canvas.height,
+          time: performance.now(),
+        };
+
+        setTrailSource("hand");
+        trail.push(point);
+
+        if (handLastPoint) {
+          cutFruits(handLastPoint, point);
+        }
+
+        handLastPoint = point;
+      }
+    } catch (error) {
+      console.error("Hand detection failed:", error);
+      handLastPoint = null;
+    }
+
+    handDetectionFrameId = requestAnimationFrame(detectFrame);
+  };
+
+  handDetectionFrameId = requestAnimationFrame(detectFrame);
+}
+
+function stopHandDetectionLoop() {
+  if (handDetectionFrameId !== null) {
+    cancelAnimationFrame(handDetectionFrameId);
+    handDetectionFrameId = null;
+  }
+
+  handLastPoint = null;
+}
+
+async function resumeCamera() {
+  try {
+    await initHandLandmarker();
+
+    if (document.hidden) {
+      return;
+    }
+
+    let stream = await initCamera();
+
+    // A visibility change can invalidate an in-flight getUserMedia request.
+    if (!stream && !document.hidden) {
+      stream = await initCamera();
+    }
+
+    if (stream && !document.hidden) {
+      startHandDetectionLoop();
+    }
+  } catch (error) {
+    console.error("Camera or hand landmark initialization failed:", error);
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopCamera();
+  } else {
+    resumeCamera();
+  }
+});
+
+window.addEventListener("pagehide", stopCamera);
+window.addEventListener("beforeunload", stopCamera);
+
+resumeCamera();
 
 // 画布尺寸
 function resizeCanvas() {
@@ -86,6 +233,8 @@ const scorePopups = [];
 let misses = 0;
 
 let lastMouse = null;
+let handLastPoint = null;
+let trailSource = null;
 let score = 0;
 let bestScore = Number(localStorage.getItem("bestScore")) || 0;
 
@@ -94,6 +243,19 @@ const FRUIT_RADIUS = 38;
 const FRUIT_FONT_SIZE = 80;
 const SLICE_DELAY = 100;
 const TRAIL_DURATION = 150;
+
+function setTrailSource(source) {
+  if (trailSource !== source) {
+    trail.length = 0;
+    trailSource = source;
+
+    if (source === "hand") {
+      lastMouse = null;
+    } else {
+      handLastPoint = null;
+    }
+  }
+}
 
 // 生成水果
 function spawnFruit() {
@@ -143,6 +305,8 @@ function getCanvasPoint(event) {
 canvas.addEventListener("mousemove", (event) => {
   const point = getCanvasPoint(event);
 
+  setTrailSource("mouse");
+  handLastPoint = null;
   trail.push(point);
 
   if (lastMouse) {
