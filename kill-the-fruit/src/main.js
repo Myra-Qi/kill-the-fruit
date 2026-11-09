@@ -136,11 +136,29 @@ function startHandDetectionLoop() {
     }
 
     try {
-      const results = handLandmarker.detectForVideo(
-        video,
-        performance.now()
-      );
-      const indexTip = results.landmarks?.[0]?.[8];
+  const start = performance.now();
+
+  const results = handLandmarker.detectForVideo(
+    video,
+    performance.now()
+  );
+
+  const duration = performance.now() - start;
+
+  if (duration > 16) {
+    console.log("Hand detection:", duration.toFixed(1), "ms");
+  }
+
+  const indexTip = results.landmarks?.[0]?.[8];
+
+  if (!indexTip) {
+    handLastPoint = null;
+  } else {
+    const point = {
+      x: indexTip.x * canvas.width,
+      y: indexTip.y * canvas.height,
+      time: performance.now(),
+    };
 
       if (!indexTip) {
         handLastPoint = null;
