@@ -135,30 +135,22 @@ function startHandDetectionLoop() {
       return;
     }
 
+
     try {
-  const start = performance.now();
+      const start = performance.now();
 
-  const results = handLandmarker.detectForVideo(
-    video,
-    performance.now()
-  );
+      const results = handLandmarker.detectForVideo(
+        video,
+        performance.now()
+      );
 
-  const duration = performance.now() - start;
+      const duration = performance.now() - start;
 
-  if (duration > 16) {
-    console.log("Hand detection:", duration.toFixed(1), "ms");
-  }
+      if (duration > 16) {
+        console.log("Hand detection:", duration.toFixed(1), "ms");
+      }
 
-  const indexTip = results.landmarks?.[0]?.[8];
-
-  if (!indexTip) {
-    handLastPoint = null;
-  } else {
-    const point = {
-      x: indexTip.x * canvas.width,
-      y: indexTip.y * canvas.height,
-      time: performance.now(),
-    };
+      const indexTip = results.landmarks?.[0]?.[8];
 
       if (!indexTip) {
         handLastPoint = null;
@@ -182,6 +174,7 @@ function startHandDetectionLoop() {
       console.error("Hand detection failed:", error);
       handLastPoint = null;
     }
+
 
     handDetectionFrameId = requestAnimationFrame(detectFrame);
   };

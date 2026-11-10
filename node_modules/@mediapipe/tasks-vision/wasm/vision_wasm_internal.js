@@ -8363,12 +8363,12 @@ Module["FS_createLazyFile"] = FS_createLazyFile;
 // End JS library exports
 // end include: postlibrary.js
 var ASM_CONSTS = {
-  1611268: $0 => {
+  1628804: $0 => {
     const canvas = Emval.toValue($0);
     const context = canvas.getContext("webgpu");
     return WebGPU.importJsTexture(context.getCurrentTexture());
   },
-  1611411: ($0, $1, $2, $3, $4) => {
+  1628947: ($0, $1, $2, $3, $4) => {
     const drawable = Emval.toValue($0);
     const device = WebGPU.getJsObject($1);
     const texture = WebGPU.getJsObject($2);
@@ -8380,7 +8380,7 @@ var ASM_CONSTS = {
       texture
     }, [ width, height ]);
   },
-  1611670: ($0, $1, $2, $3) => {
+  1629206: ($0, $1, $2, $3) => {
     const sourceExtTex = Emval.toValue($0);
     const device = WebGPU.getJsObject($1);
     const sampler = WebGPU.getJsObject($2);
@@ -8397,29 +8397,29 @@ var ASM_CONSTS = {
     });
     return WebGPU.importJsBindGroup(bindGroup);
   },
-  1612040: ($0, $1) => {
+  1629576: ($0, $1) => {
     const input = Emval.toValue($0);
     const output = Emval.toValue($1);
     const ctx = output.getContext("2d");
     ctx.drawImage(input, 0, 0, output.width, output.height);
   },
-  1612205: ($0, $1) => {
+  1629741: ($0, $1) => {
     const inputArray = Emval.toValue($0);
     const output = Emval.toValue($1);
     const ctx = output.getContext("2d");
     const image_data = new ImageData(inputArray, output.width, output.height);
     ctx.putImageData(image_data, 0, 0);
   },
-  1612429: ($0, $1) => {
+  1629965: ($0, $1) => {
     const input = Emval.toValue($0);
     const outputArray = Emval.toValue($1);
     const ctx = input.getContext("2d");
     const data = ctx.getImageData(0, 0, input.width, input.height);
     outputArray.set(data.data);
   },
-  1612633: () => (typeof HTMLCanvasElement !== "undefined"),
-  1612688: () => !!Module["preinitializedWebGPUDevice"],
-  1612739: () => {
+  1630169: () => (typeof HTMLCanvasElement !== "undefined"),
+  1630224: () => !!Module["preinitializedWebGPUDevice"],
+  1630275: () => {
     specialHTMLTargets["#canvas"] = Module.canvas;
   }
 };
@@ -8877,7 +8877,7 @@ var wasmImports = {
   /** @export */ dd: JsOnSimpleListenerUint,
   /** @export */ cd: JsOnUint8ArrayImageListener,
   /** @export */ bd: JsOnUint8ArrayImageVectorListener,
-  /** @export */ R: JsOnVectorFinishedListener,
+  /** @export */ S: JsOnVectorFinishedListener,
   /** @export */ ad: JsOnVectorListenerBool,
   /** @export */ $c: JsOnVectorListenerDouble,
   /** @export */ _c: JsOnVectorListenerFloat,
@@ -8946,7 +8946,7 @@ var wasmImports = {
   /** @export */ Ma: _emscripten_errn,
   /** @export */ rc: _emscripten_get_heap_max,
   /** @export */ y: _emscripten_get_now,
-  /** @export */ T: _emscripten_has_asyncify,
+  /** @export */ R: _emscripten_has_asyncify,
   /** @export */ qc: _emscripten_outn,
   /** @export */ pc: _emscripten_pc_get_function,
   /** @export */ oc: _emscripten_resize_heap,
@@ -8995,7 +8995,7 @@ var wasmImports = {
   /** @export */ ab: _glCreateProgram,
   /** @export */ La: _glCreateShader,
   /** @export */ p: _glDeleteBuffers,
-  /** @export */ S: _glDeleteFramebuffers,
+  /** @export */ U: _glDeleteFramebuffers,
   /** @export */ h: _glDeleteProgram,
   /** @export */ ia: _glDeleteShader,
   /** @export */ ta: _glDeleteSync,
@@ -9038,16 +9038,16 @@ var wasmImports = {
   /** @export */ f: _glTexParameteri,
   /** @export */ oa: _glTexStorage2D,
   /** @export */ Tb: _glTexStorage3D,
-  /** @export */ Y: _glTexSubImage2D,
+  /** @export */ T: _glTexSubImage2D,
   /** @export */ Sb: _glTexSubImage3D,
   /** @export */ M: _glUniform1f,
   /** @export */ na: _glUniform1fv,
   /** @export */ e: _glUniform1i,
-  /** @export */ X: _glUniform2f,
+  /** @export */ Y: _glUniform2f,
   /** @export */ Rb: _glUniform2fv,
   /** @export */ Ja: _glUniform3f,
   /** @export */ Va: _glUniform4f,
-  /** @export */ W: _glUniform4fv,
+  /** @export */ X: _glUniform4fv,
   /** @export */ Qb: _glUniform4iv,
   /** @export */ Pb: _glUniformBlockBinding,
   /** @export */ Ob: _glUniformMatrix2fv,
@@ -9055,7 +9055,7 @@ var wasmImports = {
   /** @export */ Ia: _glUniformMatrix4fv,
   /** @export */ g: _glUseProgram,
   /** @export */ k: _glVertexAttribPointer,
-  /** @export */ V: _glViewport,
+  /** @export */ W: _glViewport,
   /** @export */ Ha: hardware_concurrency,
   /** @export */ zb: mediapipe_create_utility_canvas2d,
   /** @export */ yb: _mediapipe_find_canvas_event_target,
@@ -9080,7 +9080,7 @@ var wasmImports = {
   /** @export */ qb: _wgpuDeviceCreateComputePipeline,
   /** @export */ pb: _wgpuDeviceCreatePipelineLayout,
   /** @export */ Ua: _wgpuDeviceCreateRenderPipeline,
-  /** @export */ U: _wgpuDeviceCreateSampler,
+  /** @export */ V: _wgpuDeviceCreateSampler,
   /** @export */ da: _wgpuDeviceCreateTexture,
   /** @export */ J: _wgpuQueueSubmit,
   /** @export */ Ab: _wgpuQueueWriteBuffer,
