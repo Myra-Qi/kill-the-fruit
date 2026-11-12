@@ -16,6 +16,11 @@ let cameraStartPromise = null;
 let cameraRequestId = 0;
 let handDetectionFrameId = null;
 
+let lastHandDetectionTime = 0;
+let lastVideoTime = -1;
+
+const HAND_DETECTION_INTERVAL = 50;
+
 async function initCamera() {
   if (cameraStream) {
     return cameraStream;
@@ -113,6 +118,7 @@ async function initHandLandmarker() {
   return handLandmarkerPromise;
 }
 
+
 function startHandDetectionLoop() {
   if (handDetectionFrameId !== null) {
     return;
@@ -135,20 +141,28 @@ function startHandDetectionLoop() {
       return;
     }
 
+    // 限制识别频率
+    const now = performance.now();
+
+    if (now - lastHandDetectionTime < HAND_DETECTION_INTERVAL) {
+      handDetectionFrameId = requestAnimationFrame(detectFrame);
+      return;
+    }
+
+    // 检查视频帧是否更新
+    if (video.currentTime === lastVideoTime) {
+      handDetectionFrameId = requestAnimationFrame(detectFrame);
+      return;
+    }
+
+    lastHandDetectionTime = now;
+    lastVideoTime = video.currentTime;
 
     try {
-      const start = performance.now();
-
       const results = handLandmarker.detectForVideo(
         video,
-        performance.now()
+        now
       );
-
-      const duration = performance.now() - start;
-
-      if (duration > 16) {
-        console.log("Hand detection:", duration.toFixed(1), "ms");
-      }
 
       const indexTip = results.landmarks?.[0]?.[8];
 
@@ -175,12 +189,12 @@ function startHandDetectionLoop() {
       handLastPoint = null;
     }
 
-
     handDetectionFrameId = requestAnimationFrame(detectFrame);
   };
 
   handDetectionFrameId = requestAnimationFrame(detectFrame);
 }
+
 
 function stopHandDetectionLoop() {
   if (handDetectionFrameId !== null) {
