@@ -164,7 +164,13 @@ function startHandDetectionLoop() {
         now
       );
 
-      const indexTip = results.landmarks?.[0]?.[8];
+const indexTip = results.landmarks?.[0]?.[8];
+
+console.log({
+        hands: results.landmarks?.length ?? 0,
+        indexTip: results.landmarks?.[0]?.[8],
+        handedness: results.handedness?.[0]?.[0]
+});
 
       if (!indexTip) {
         handLastPoint = null;
