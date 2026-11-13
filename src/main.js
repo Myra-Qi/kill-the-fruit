@@ -5,9 +5,8 @@ import {
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
-
 const video = document.createElement("video");
-video.style.display = "none";
+
 video.playsInline = true;
 document.body.appendChild(video);
 
@@ -176,7 +175,7 @@ console.log({
         handLastPoint = null;
       } else {
         const point = {
-          x: indexTip.x * canvas.width,
+          x: (1 - indexTip.x) * canvas.width,
           y: indexTip.y * canvas.height,
           time: performance.now(),
         };
