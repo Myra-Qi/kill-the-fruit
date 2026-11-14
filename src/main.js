@@ -54,7 +54,6 @@ async function initCamera() {
       return null;
     }
 
-    console.log("Camera ready!");
     return stream;
   }).finally(() => {
     cameraStartPromise = null;
@@ -108,7 +107,6 @@ async function initHandLandmarker() {
       }
     );
 
-    console.log("Hand Landmarker ready!");
     return handLandmarker;
   })().finally(() => {
     handLandmarkerPromise = null;
@@ -164,12 +162,6 @@ function startHandDetectionLoop() {
       );
 
 const indexTip = results.landmarks?.[0]?.[8];
-
-console.log({
-        hands: results.landmarks?.length ?? 0,
-        indexTip: results.landmarks?.[0]?.[8],
-        handedness: results.handedness?.[0]?.[0]
-});
 
       if (!indexTip) {
         handLastPoint = null;
